@@ -1,4 +1,3 @@
-// App.js
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import SignIn from './components/auth/SignIn';
@@ -11,15 +10,12 @@ import Checkout from './components/checkout/Checkout';
 function App() {
   const [cartCount, setCartCount] = useState(0);
 
-  const handleCheckout = () => {
-    // Implement logic for checkout
-    console.log('Checking out...');
-  };
+  
 
   return (
     <Router>
       <div>
-        <Navbar cartCount={cartCount} onCheckout={handleCheckout} setCartCount={setCartCount}/>
+        <Navbar cartCount={cartCount} setCartCount={setCartCount}/>
         <Routes>
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />

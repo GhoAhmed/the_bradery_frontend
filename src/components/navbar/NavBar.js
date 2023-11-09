@@ -1,10 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../images/the_bradery_logo.jpg';
 import './NavBar.css';
 
 const Navbar = ({ cartCount, setCartCount }) => {
   const [isCartOpen, setCartOpen] = useState(false);
+  const [cartItems, setCartItems] = useState([]);
+
+  useEffect(() => {
+    // Fetch cart items from local storage
+    const storedCartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+    setCartItems(storedCartItems);
+  }, [cartCount]);
 
   const handleCartClick = () => {
     setCartOpen((prev) => !prev);
@@ -16,7 +23,6 @@ const Navbar = ({ cartCount, setCartCount }) => {
 
     // Reset the cart count using local state
     setCartCount(0);
-
     // Update local storage with the new cart count
     localStorage.setItem('cartCount', '0');
     setCartOpen(false);
@@ -31,12 +37,17 @@ const Navbar = ({ cartCount, setCartCount }) => {
         <div className="cart-button-container">
           <Link to="/checkout">
             <button className="cart-button" onClick={handleCartClick}>
-              Cart <span className="cart-count">{cartCount}</span>
+              Cart <span className="cart-count">{isNaN(cartCount) ? 0 : cartCount}</span>
             </button>
           </Link>
           {cartCount > 0 && isCartOpen && (
             <div className="cart-dropdown">
-              {/* Render the cart items here */}
+              {cartItems.map((item) => (
+                <div key={item.productId} className="cart-item">
+                  <p>{item.name}</p>
+                  <p>Quantity: {item.quantity}</p>
+                </div>
+              ))}
             </div>
           )}
         </div>

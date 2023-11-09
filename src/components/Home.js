@@ -40,25 +40,25 @@ const Home = ({ setCartCount }) => {
   }, [setCartCount]);
 
   const addToCart = (productId) => {
-    // Implement the logic to add the product to the cart
-    console.log(`Product added to cart: ${productId}`);
-
+    // Check if productId is valid
+    if (!productId) {
+      console.error('Invalid productId:', productId);
+      return;
+    }
+  
     // Get the current cart data from local storage
     const currentCart = JSON.parse(localStorage.getItem('cart')) || {};
-
+  
     // Update the cart data with the new product
-    const updatedCart = {
-      ...currentCart,
-      [productId]: (currentCart[productId] || 0) + 1,
-    };
-
+    currentCart[productId] = (currentCart[productId] || 0) + 1;
+  
     // Save the updated cart data to local storage
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
-
-    // Update the cart count
-    const totalCount = Object.values(updatedCart).reduce((acc, qty) => acc + qty, 0);
-    setCartCount(totalCount);
+    localStorage.setItem('cart', JSON.stringify(currentCart));
+  
+    // Log the updated cart data for debugging
+    console.log('Updated cart in addToCart:', currentCart);
   };
+  
 
   return (
     <div>
