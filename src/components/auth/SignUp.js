@@ -1,37 +1,20 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { registerUser } from '../../redux/actions/authActions';
+import { useNavigate } from 'react-router-dom';  // Add this line
 
 const SignUp = () => {
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();  // Add this line
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSignUp = async (e) => {
+  const handleSignUp = (e) => {
     e.preventDefault();
-
-    try {
-      const response = await axios.post('http://127.0.0.1:8000/api/signup', {
-        name,
-        email,
-        password,
-      });
-
-      if (response.status === 201) {
-        // Registration successful
-        console.log('Registration successful', response.data);
-
-        // Redirect to /home
-        navigate('/home');
-      } else {
-        console.error('Registration failed', response.data.error);
-      }
-    } catch (error) {
-      console.error('Error during registration', error);
-    }
+    dispatch(registerUser(name, email, password, navigate));
   };
-
+  
   return (
     <div>
       <h2>Sign Up</h2>
