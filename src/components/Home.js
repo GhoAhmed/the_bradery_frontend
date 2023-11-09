@@ -1,8 +1,9 @@
+// Home.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './assets/ProductList.css';
 
-const Home = () => {
+const Home = ({ setCartCount }) => {
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
 
@@ -17,23 +18,46 @@ const Home = () => {
         });
 
         if (response.status === 200) {
-          setProducts(response.data.products); // Assuming products are nested under 'products'
+          setProducts(response.data.products);
         } else {
           console.error('Error fetching products', response.data.error);
-          setError(response.data.error); // Set the error state
+          setError(response.data.error);
         }
       } catch (error) {
         console.error('Error fetching products', error);
-        setError('An error occurred while fetching products.'); // Set a generic error message
+        setError('An error occurred while fetching products.');
       }
     };
 
     fetchProducts();
   }, []);
 
+  useEffect(() => {
+    // Update the cart count based on the data in local storage
+    const currentCart = JSON.parse(localStorage.getItem('cart')) || {};
+    const totalCount = Object.values(currentCart).reduce((acc, qty) => acc + qty, 0);
+    setCartCount(totalCount);
+  }, [setCartCount]);
+
   const addToCart = (productId) => {
     // Implement the logic to add the product to the cart
     console.log(`Product added to cart: ${productId}`);
+
+    // Get the current cart data from local storage
+    const currentCart = JSON.parse(localStorage.getItem('cart')) || {};
+
+    // Update the cart data with the new product
+    const updatedCart = {
+      ...currentCart,
+      [productId]: (currentCart[productId] || 0) + 1,
+    };
+
+    // Save the updated cart data to local storage
+    localStorage.setItem('cart', JSON.stringify(updatedCart));
+
+    // Update the cart count
+    const totalCount = Object.values(updatedCart).reduce((acc, qty) => acc + qty, 0);
+    setCartCount(totalCount);
   };
 
   return (
@@ -42,16 +66,14 @@ const Home = () => {
       {error ? (
         <p>Error: {error}</p>
       ) : (
-        <div>
-          <div className="product-container">
-            {products.map((product) => (
-              <div key={product.id} className="product-card">
-                <h4>{product.name}</h4>
-                <p>Price: ${product.price}</p>
-                <button onClick={() => addToCart(product.id)}>Add to Cart</button>
-              </div>
-            ))}
-          </div>
+        <div className="product-container">
+          {products.map((product) => (
+            <div key={product.id} className="product-card">
+              <h4>{product.name}</h4>
+              <p>Price: ${product.price}</p>
+              <button onClick={() => addToCart(product.id)}>Add to Cart</button>
+            </div>
+          ))}
         </div>
       )}
     </div>
